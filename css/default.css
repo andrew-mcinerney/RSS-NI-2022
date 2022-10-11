@@ -18,6 +18,10 @@ a, a > code {
 .inverse h1, .inverse h2, .inverse h3 {
   color: #f3f3f3;
 }
+/*-- Hides slide number from title slide --*/
+.inverse .remark-slide-number {
+  display:             none;
+}
 /* Two-column layout */
 .left-column {
   color: #777;

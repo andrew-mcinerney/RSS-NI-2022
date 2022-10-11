@@ -66,12 +66,11 @@ b, strong {
 }
 
 .inverse {
-    background-color: var(--yellow-color);
+    background-color: var(--sky-color);
 }
 
 .subsection h1 {
     font-size: 75px;
-    color: var(--yellow-color);
 }
 
 .remark-code, .remark-inline-code {
@@ -202,19 +201,19 @@ code.r{
 }
 
 a {
-    color: var(--yellow-color);
+    color: var(--sky-color);
 }
 
 a:hover {
-    color: var(--yellow-color);
+    color: var(--sky-color);
 }
 
 a:focus {
-    color: var(--yellow-color);
+    color: var(--sky-color);
 }
 
 a:visited {
-    color: var(--yellow-color);
+    color: var(--sky-color);
 }
 
 /*-- CUSTOM CLASS FOR THE TITLE SLIDE --*/

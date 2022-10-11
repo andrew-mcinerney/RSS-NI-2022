@@ -27,6 +27,10 @@ class: title-slide, left, bottom
 
 ---
 
+# About Me
+
+---
+
 # Agenda
 
 
@@ -51,7 +55,15 @@ class: title-slide, left, bottom
  
 - R Implementation
 
+--
 
+&lt;br&gt;
+
+Slides: [bit.ly/rss-fnn-stat](https://bit.ly/rss-fnn-stat)   Code: [bit.ly/rss-fnn-stat-code](https://bit.ly/rss-fnn-stat-code)
+
+---
+class: inverse middle center subsection
+# Feedforward Neural Networks
 
 ---
 
@@ -77,7 +89,7 @@ $$
 
 ---
 
-# Data Application 
+# Motivating Example
 
 --
 
@@ -134,7 +146,9 @@ summary(nn)
 ```
 
 
-
+---
+class: inverse middle center subsection
+# Statistical Perspective
 
 ---
 
@@ -207,20 +221,139 @@ Model selection is required.
 
 
 ---
-
-
+class: inverse middle center subsection
 # Model Selection
-
---
-
-&lt;img src="img/modelsel.png" width="90%" style="display: block; margin: auto;" /&gt;
-
---
-
-A Statistically-Based Approach to Feedforward Neural Network Model Selection (arXiv:2207.04248)
 
 ---
 
+# Model Selection
+
+
+.pull-left[
+&lt;img src="img/FNN.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+&lt;br&gt;
+
+&lt;br&gt;
+
+
+$$
+`\begin{equation}
+\text{NN}(x_i) = \gamma_0+\sum_{k=1}^q \gamma_k \phi \left( \sum_{j=0}^p \omega_{jk}x_{ji}\right)
+\end{equation}`
+$$
+
+---
+# Proposed Approach
+
+.pull-left[
+&lt;img src="img/FNN.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+.pull-right[
+Three phases for model selection:
+
+{{content}}
+]
+
+--
+
+1. Hidden-node selection
+{{content}}
+
+--
+
+2. Input-node selection
+{{content}}
+
+--
+
+3. Fine tuning
+{{content}}
+
+---
+
+# Proposed Approach
+
+--
+.center[
+&lt;img src="img/hidden-node-2.png" height="125px"/&gt;
+]
+--
+.center[
+&lt;img src="img/input-node-2.png" height="125px"/&gt;
+]
+--
+.center[
+&lt;img src="img/fine-tune-2.png" height="125px"/&gt;
+]
+---
+
+# Objective Function
+
+--
+
+- Machine Learning:
+
+--
+
+$$
+`\begin{equation}
+\text{Out-of-Sample MSE} = \sum_{i=1}^{n_\text{val}} (y_i - NN(x_i))^2
+\end{equation}`
+$$
+
+
+--
+
+- Proposed:
+
+--
+
+
+$$
+`\begin{equation}
+\text{BIC} = -2\ell(\hat{\theta}) + \log(n)(K + 1),
+\end{equation}`
+$$
+
+--
+
+$$
+`\begin{equation}
+K = (p+2)q+1
+\end{equation}`
+$$
+
+
+---
+# Simulation Results: Approach
+
+--
+
+&lt;img src="img/table-sim-approach.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+# Simulation Results: Objective Function
+
+--
+
+&lt;img src="img/table-sim-objfun.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+--
+
+&lt;img src="img/table-sim-metrics.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+class: inverse middle center subsection
+# Statistical Interpretaion
+
+
+---
 
 # Hypothesis Testing
 
@@ -276,34 +409,6 @@ $$
 {{content}}
 
 
-
-&lt;!-- --- --&gt;
-
-&lt;!-- # Covariate-Effect Plots --&gt;
-
-&lt;!-- Propose covariate-effect plots of the following form: --&gt;
-
-&lt;!-- -- --&gt;
-
-&lt;!-- $$ --&gt;
-&lt;!-- \begin{equation} --&gt;
-&lt;!--  \hat{\beta}_j(x) = \frac{1}{n}\sum_{i=1}^n \left[ g(x + \sigma_{j}, X \setminus x_{ij}) - g(x, X \setminus x_{ij}) \right] --&gt;
-&lt;!-- \end{equation} --&gt;
-&lt;!-- $$ --&gt;
-
-&lt;!-- -- --&gt;
-
-&lt;!-- And their associated uncertainty: --&gt;
-
-&lt;!-- -- --&gt;
-
-&lt;!-- $$ --&gt;
-&lt;!-- \begin{equation} --&gt;
-&lt;!--   \hat{\beta}_j(x) \sim N[\beta_j(x), \nabla_\theta^T \beta_j(x) ~ \Sigma ~ \nabla_\theta \beta_j(x)] --&gt;
-&lt;!-- \end{equation} --&gt;
-&lt;!-- $$ --&gt;
-
-
 ---
 
 # Covariate-Effect Plots
@@ -333,6 +438,10 @@ Usually set `\(d = \text{SD}(x_j)\)`
 --
 
 Associated uncertainty via delta method.
+
+---
+class: inverse middle center subsection
+# R Implementation
 
 
 ---

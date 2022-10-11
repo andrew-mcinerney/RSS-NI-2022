@@ -16,29 +16,13 @@ output:
       highlightLanguage: ["r"]
       countIncrementalSlides: false
       ratio: '16:9'
-    # includes:
-    #   after_body: [css/insert-logo.html]
+header-includes:
+  - \usepackage{booktabs}
 ---
 
 ```{r, echo=FALSE, message=FALSE}
 library(knitr)
 library(fontawesome)
-# the default output hook
-hook_output <- knit_hooks$get('output')
-knit_hooks$set(output = function(x, options) {
-  if (!is.null(n <- options$out.lines)) {
-    n <- as.numeric(n)
-    x <- unlist(stringr::str_split(x, "\n"))
-    nx <- length(x) 
-    x <- x[pmin(n,nx)]
-    if(min(n) > 1)  
-      x <- c(paste(options$comment, "[...]"), x)
-    if(max(n) < nx) 
-      x <- c(x, paste(options$comment, "[...]"))
-    x <- paste(c(x, "\n"), collapse = "\n")
-  }
-  hook_output(x, options)
-    })
 ```
 
 ```{r analysis, include=FALSE, cache=TRUE}
@@ -98,6 +82,10 @@ class: title-slide, left, bottom
 
 ---
 
+# About Me
+
+---
+
 # Agenda
 
 
@@ -122,7 +110,15 @@ class: title-slide, left, bottom
  
 - R Implementation
 
+--
 
+<br>
+
+Slides: [bit.ly/rss-fnn-stat](https://bit.ly/rss-fnn-stat)   Code: [bit.ly/rss-fnn-stat-code](https://bit.ly/rss-fnn-stat-code)
+
+---
+class: inverse middle center subsection
+# Feedforward Neural Networks
 
 ---
 
@@ -150,7 +146,7 @@ $$
 
 ---
 
-# Data Application 
+# Motivating Example
 
 --
 
@@ -200,7 +196,9 @@ cat(c(capture.output(summary(nnet_model))[c(1:10)], "[...]"),
 ```
 
 
-
+---
+class: inverse middle center subsection
+# Statistical Perspective
 
 ---
 
@@ -273,22 +271,149 @@ Model selection is required.
 
 
 ---
+class: inverse middle center subsection
+# Model Selection
 
+---
 
 # Model Selection
 
+
+.pull-left[
+```{r, echo=FALSE, out.width="90%", fig.align="center"}
+knitr::include_graphics("img/FNN.png")
+``` 
+]
+
+
+
+<br>
+
+<br>
+
+
+$$
+\begin{equation}
+\text{NN}(x_i) = \gamma_0+\sum_{k=1}^q \gamma_k \phi \left( \sum_{j=0}^p \omega_{jk}x_{ji}\right)
+\end{equation}
+$$
+
+---
+# Proposed Approach
+
+.pull-left[
+```{r, echo=FALSE, out.width="90%", fig.align="center"}
+knitr::include_graphics("img/FNN.png")
+``` 
+]
+
+--
+.pull-right[
+Three phases for model selection:
+
+{{content}}
+]
+
 --
 
-```{r, echo=FALSE, out.width="90%", fig.align="center"}
-knitr::include_graphics("img/modelsel.png")
+1. Hidden-node selection
+{{content}}
+
+--
+
+2. Input-node selection
+{{content}}
+
+--
+
+3. Fine tuning
+{{content}}
+
+---
+
+# Proposed Approach
+
+--
+.center[
+<img src="img/hidden-node-2.png" height="125px"/>
+]
+--
+.center[
+<img src="img/input-node-2.png" height="125px"/>
+]
+--
+.center[
+<img src="img/fine-tune-2.png" height="125px"/>
+]
+---
+
+# Objective Function
+
+--
+
+- Machine Learning:
+
+--
+
+$$
+\begin{equation}
+\text{Out-of-Sample MSE} = \sum_{i=1}^{n_\text{val}} (y_i - NN(x_i))^2
+\end{equation}
+$$
+
+
+--
+
+- Proposed:
+
+--
+
+
+$$
+\begin{equation}
+\text{BIC} = -2\ell(\hat{\theta}) + \log(n)(K + 1),
+\end{equation}
+$$
+
+--
+
+$$
+\begin{equation}
+K = (p+2)q+1
+\end{equation}
+$$
+
+
+---
+# Simulation Results: Approach
+
+--
+
+```{r, echo=FALSE, out.width="70%", fig.align="center"}
+knitr::include_graphics("img/table-sim-approach.png")
+``` 
+
+---
+# Simulation Results: Objective Function
+
+--
+
+```{r, echo=FALSE, out.width="50%", fig.align="center"}
+knitr::include_graphics("img/table-sim-objfun.png")
 ``` 
 
 --
 
-A Statistically-Based Approach to Feedforward Neural Network Model Selection (arXiv:2207.04248)
+```{r, echo=FALSE, out.width="70%", fig.align="center"}
+knitr::include_graphics("img/table-sim-metrics.png")
+```
 
 ---
+class: inverse middle center subsection
+# Statistical Interpretaion
 
+
+---
 
 # Hypothesis Testing
 
@@ -348,34 +473,6 @@ $$
 {{content}}
 
 
-
-<!-- --- -->
-
-<!-- # Covariate-Effect Plots -->
-
-<!-- Propose covariate-effect plots of the following form: -->
-
-<!-- -- -->
-
-<!-- $$ -->
-<!-- \begin{equation} -->
-<!--  \hat{\beta}_j(x) = \frac{1}{n}\sum_{i=1}^n \left[ g(x + \sigma_{j}, X \setminus x_{ij}) - g(x, X \setminus x_{ij}) \right] -->
-<!-- \end{equation} -->
-<!-- $$ -->
-
-<!-- -- -->
-
-<!-- And their associated uncertainty: -->
-
-<!-- -- -->
-
-<!-- $$ -->
-<!-- \begin{equation} -->
-<!--   \hat{\beta}_j(x) \sim N[\beta_j(x), \nabla_\theta^T \beta_j(x) ~ \Sigma ~ \nabla_\theta \beta_j(x)] -->
-<!-- \end{equation} -->
-<!-- $$ -->
-
-
 ---
 
 # Covariate-Effect Plots
@@ -405,6 +502,10 @@ Usually set $d = \text{SD}(x_j)$
 --
 
 Associated uncertainty via delta method.
+
+---
+class: inverse middle center subsection
+# R Implementation
 
 
 ---
