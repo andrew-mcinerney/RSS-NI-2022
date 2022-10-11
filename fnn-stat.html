@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Feedforward Neural Networks as Statistical Models</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Andrew McInerney" />
+    <meta name="date" content="2022-10-26" />
+    <script src="fnn-stat_files/header-attrs-2.14/header-attrs.js"></script>
+    <link rel="stylesheet" href="css/default.css" type="text/css" />
+    <link rel="stylesheet" href="css/fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+
+
+class: title-slide, left, bottom
+
+# Feedforward Neural Networks as Statistical Models
+----
+## **Andrew McInerney**, **Kevin Burke**
+### University of Limerick
+#### RSS Northern Ireland, 26 Oct 2022
+
+---
+
+# Agenda
+
+
+--
+
+- Feedforward Neural Networks
+
+
+--
+
+- Statistical Perspective
+
+--
+
+- Model Selection
+
+--
+
+- Statistical Interpretation
+
+--
+ 
+- R Implementation
+
+
+
+---
+
+# Feedforward Neural Networks 
+
+--
+
+.pull-left[ 
+&lt;img src="img/FNN.png" width="90%" height="110%" style="display: block; margin: auto;" /&gt;
+]
+
+&lt;br&gt;
+
+&lt;br&gt;
+
+--
+
+$$
+`\begin{equation}
+\text{NN}(x_i) = \gamma_0+\sum_{k=1}^q \gamma_k \phi \left( \sum_{j=0}^p \omega_{jk}x_{ji}\right)
+\end{equation}`
+$$
+
+---
+
+# Data Application 
+
+--
+
+### Boston Housing Data (Kaggle)
+
+--
+
+506 communities in Boston, MA.    
+
+--
+
+ 
+Response: 
+
+- `medv` (median value of owner-occupied homes)    
+
+--
+
+12 Explanatory Variables:  
+
+- `rm` (average number of rooms per dwelling)  
+
+- `lstat` (proportion of population that are disadvantaged)
+
+---
+
+# R Implementation: nnet
+
+--
+
+
+```r
+library(nnet)
+nn &lt;- nnet(medv ~ ., data = Boston, size = 8, maxit = 5000,
+           linout = TRUE)
+summary(nn)
+```
+
+--
+
+
+```{.bg-primary}
+## a 11-8-1 network with 105 weights
+## options were - linear output units 
+##   b-&gt;h1  i1-&gt;h1  i2-&gt;h1  i3-&gt;h1  i4-&gt;h1  i5-&gt;h1  i6-&gt;h1  i7-&gt;h1  i8-&gt;h1  i9-&gt;h1 i10-&gt;h1 i11-&gt;h1 
+##    2.79    5.92    0.34    1.31    0.23   -1.31   -2.67    0.77   -0.22    1.46    1.20    1.26 
+##   b-&gt;h2  i1-&gt;h2  i2-&gt;h2  i3-&gt;h2  i4-&gt;h2  i5-&gt;h2  i6-&gt;h2  i7-&gt;h2  i8-&gt;h2  i9-&gt;h2 i10-&gt;h2 i11-&gt;h2 
+##   20.53    5.59    3.52   -0.64   12.64   -5.25   -4.12    0.24    2.64    0.49  -21.17    4.03 
+##   b-&gt;h3  i1-&gt;h3  i2-&gt;h3  i3-&gt;h3  i4-&gt;h3  i5-&gt;h3  i6-&gt;h3  i7-&gt;h3  i8-&gt;h3  i9-&gt;h3 i10-&gt;h3 i11-&gt;h3 
+##   23.46   59.84  -37.64  -20.10    1.60   37.03   -4.74  -34.65  128.73  -20.36    7.16   24.70 
+##   b-&gt;h4  i1-&gt;h4  i2-&gt;h4  i3-&gt;h4  i4-&gt;h4  i5-&gt;h4  i6-&gt;h4  i7-&gt;h4  i8-&gt;h4  i9-&gt;h4 i10-&gt;h4 i11-&gt;h4 
+##   -0.35   -0.79    6.19   11.94    0.78   -6.34    3.35   -1.71    7.61    2.77   -2.68    0.15 
+## [...]
+```
+
+
+
+
+---
+
+# Statistical Perspective
+
+--
+
+$$
+y_i = \text{NN}(x_i) + \varepsilon_i, 
+$$
+
+--
+
+where
+
+$$
+\varepsilon_i \sim N(0, \sigma^2)
+$$
+
+&lt;br&gt;
+
+--
+
+$$
+\ell(\theta)= -\frac{n}{2}\log(2\pi\sigma^2)-\frac{1}{2\sigma^2}\sum_{i=1}^n(y_i-\text{NN}(x_i))^2
+$$
+
+---
+
+# Uncertainty Quantification
+
+Then, as `\(n \to \infty\)`
+
+$$
+\hat{\theta} \sim N[\theta, \Sigma = \mathcal{I}(\theta)^{-1}]
+$$
+
+--
+
+Estimate `\(\Sigma\)` using
+
+$$
+\hat{\Sigma} = I_o(\hat{\theta})^{-1}
+$$
+
+--
+
+&lt;br&gt;  
+
+However, inverting `\(I_o(\hat{\theta})\)` can be problematic in neural networks.
+---
+
+# Redundancy
+
+--
+
+Redundant hidden nodes can lead to issues of unidentifiability for some of the parameters (Fukumizu 1996).
+
+&lt;br&gt;
+
+--
+
+Redundant hidden nodes `\(\implies\)` Singular information matrix.
+
+&lt;br&gt;
+
+--
+
+Model selection is required.
+
+
+---
+
+
+# Model Selection
+
+--
+
+&lt;img src="img/modelsel.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+--
+
+A Statistically-Based Approach to Feedforward Neural Network Model Selection (arXiv:2207.04248)
+
+---
+
+
+# Hypothesis Testing
+
+--
+
+.pull-left[
+&lt;img src="img/FNN1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+count: false
+# Hypothesis Testing
+
+
+.pull-left[
+&lt;img src="img/FNN2.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+  Wald test:
+  
+  {{content}}
+  
+  ]
+
+--
+
+$$
+`\begin{equation}
+ \omega_j = (\omega_{j1},\omega_{j2},\dotsc,\omega_{jq})^T
+\end{equation}`
+$$
+{{content}}
+
+--
+
+$$
+`\begin{equation}
+ H_0: \omega_j = 0
+\end{equation}`
+$$
+{{content}}
+
+--
+
+$$
+`\begin{equation}
+ (\hat{\omega}_{j} - \omega_j)^T\Sigma_{\hat{\omega}_{j}}^{-1}(\hat{\omega}_{j} - \omega_j) \sim \chi^2_q
+\end{equation}`
+$$
+{{content}}
+
+
+
+&lt;!-- --- --&gt;
+
+&lt;!-- # Covariate-Effect Plots --&gt;
+
+&lt;!-- Propose covariate-effect plots of the following form: --&gt;
+
+&lt;!-- -- --&gt;
+
+&lt;!-- $$ --&gt;
+&lt;!-- \begin{equation} --&gt;
+&lt;!--  \hat{\beta}_j(x) = \frac{1}{n}\sum_{i=1}^n \left[ g(x + \sigma_{j}, X \setminus x_{ij}) - g(x, X \setminus x_{ij}) \right] --&gt;
+&lt;!-- \end{equation} --&gt;
+&lt;!-- $$ --&gt;
+
+&lt;!-- -- --&gt;
+
+&lt;!-- And their associated uncertainty: --&gt;
+
+&lt;!-- -- --&gt;
+
+&lt;!-- $$ --&gt;
+&lt;!-- \begin{equation} --&gt;
+&lt;!--   \hat{\beta}_j(x) \sim N[\beta_j(x), \nabla_\theta^T \beta_j(x) ~ \Sigma ~ \nabla_\theta \beta_j(x)] --&gt;
+&lt;!-- \end{equation} --&gt;
+&lt;!-- $$ --&gt;
+
+
+---
+
+# Covariate-Effect Plots
+
+
+$$
+`\begin{equation}
+ \overline{\text{NN}}_j(x) = \frac{1}{n}\sum_{i=1}^n \text{NN}(x_{i,1}, \ldots,x_{i,j-1},x, x_{i,j+1}, \ldots)
+\end{equation}`
+$$
+
+--
+Propose covariate-effect plots of the following form:
+
+--
+
+$$
+`\begin{equation}
+ \hat{\beta}_j(x,d) = \overline{\text{NN}}_j(x + d) - \overline{\text{NN}}_j(x)
+\end{equation}`
+$$
+
+--
+
+Usually set `\(d = \text{SD}(x_j)\)`
+
+--
+
+Associated uncertainty via delta method.
+
+
+---
+
+
+# R Implementation
+
+--
+
+.left-column[ 
+&lt;br&gt;
+&lt;img src="img/statnnet.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.right-column[
+&lt;br&gt;
+&lt;br&gt;
+
+```r
+# install.packages("devtools")
+library(devtools)
+install_github("andrew-mcinerney/statnnet")
+```
+]
+
+
+---
+
+# Data Application (Revistied)
+
+### Boston Housing Data (Kaggle)
+
+506 communities in Boston, MA.   
+
+--
+
+ 
+Response: 
+
+- `medv` (median value of owner-occupied homes)    
+
+--
+
+12 Explanatory Variables:  
+
+- `rm` (average number of rooms per dwelling)  
+
+- `lstat` (proportion of population that are 'lower status')
+
+---
+
+# Boston Housing: Model Selection 
+
+
+
+```r
+library(statnnet)
+nn &lt;- selectnn(medv ~ ., data = Boston, Q = 10,
+               n_init = 10, maxit = 5000)
+summary(nn)
+```
+
+--
+
+
+```{.bg-primary}
+## Call:
+## selectnn.formula(formula = medv ~ ., data = Boston, Q = 10, n_init = 10, 
+##     maxit = 5000)
+## 
+## Number of input nodes: 8 
+## Number of hidden nodes: 4 
+## 
+## Inputs:
+##  Covariate Selected Delta.BIC
+##         rm      Yes   236.907
+##      lstat      Yes   168.023
+## [...]
+```
+
+---
+
+# Boston Housing: Model Summary 
+
+
+
+```r
+stnn &lt;- statnnet(nn)  
+summary(stnn)
+```
+
+--
+
+
+```{.bg-primary}
+## [...]
+## Coefficients:
+##                                         Wald
+##           Estimate Std. Error |      X^2    Pr(&gt; X^2)
+##     crim -0.115769   0.019085 | 109.8369 0.00e+00 ***
+##    indus -0.176500   0.018028 |  51.6302 1.65e-10 ***
+##      nox -0.163091   0.020639 |  39.4919 5.51e-08 ***
+##       rm  0.201211   0.017924 |  45.5051 3.12e-09 ***
+##      dis  0.101701   0.022437 |  14.6031 5.60e-03 ** 
+##      rad -0.099667   0.019687 | 107.3354 0.00e+00 ***
+##  ptratio -0.192649   0.016672 |   7.8733 9.63e-02 .  
+##    lstat -0.263402   0.014443 |  50.2500 3.20e-10 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## [...]
+```
+
+---
+
+# Boston Housing: Covariate-Effect Plots 
+
+
+```r
+plot(stnn, conf_int = TRUE, method = "deltamethod", which = c(4, 8))
+```
+
+--
+
+.pull-left[ 
+![](fnn-stat_files/figure-html/plot1-1.png)&lt;!-- --&gt;
+]  
+
+--
+
+.pull-right[ 
+![](fnn-stat_files/figure-html/plot2-1.png)&lt;!-- --&gt;
+] 
+
+---
+class: final-slide
+# Summary 
+
+
+Feedforward neural networks are non-linear regression models.  
+
+--
+
+Calculation of a likelihood function allows for uncertainty quantification.
+
+--
+
+Our R package extends existing neural network packages
+to allow for a more interpretable, statistically-based output.
+
+
+---
+
+class: final-slide
+# References
+
+Fukumizu, K. (1996).
+A regularity condition of the information  
+matrix of a multilayer perceptron network. Neural Networks,  
+9(5):871–879. 
+
+McInerney, A. and Burke, K. (2022).
+A Statistically-Based Approach  
+to Feedforward Neural Network Model Selection.
+arXiv preprint arXiv:2207.04248.
+
+
+### R Package  
+
+
+```r
+devtools::install_github("andrew-mcinerney/statnnet")
+```
+
+<svg aria-hidden="true" role="img" viewBox="0 0 496 512" style="height:1em;width:0.97em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:#007DBA;overflow:visible;position:relative;"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3 .3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5 .3-6.2 2.3zm44.2-1.7c-2.9 .7-4.9 2.6-4.6 4.9 .3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3 .7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3 .3 2.9 2.3 3.9 1.6 1 3.6 .7 4.3-.7 .7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3 .7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3 .7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg> &lt;font size="5"&gt;andrew-mcinerney&lt;/font&gt;   <svg aria-hidden="true" role="img" viewBox="0 0 512 512" style="height:1em;width:1em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:#007DBA;overflow:visible;position:relative;"><path d="M459.4 151.7c.325 4.548 .325 9.097 .325 13.65 0 138.7-105.6 298.6-298.6 298.6-59.45 0-114.7-17.22-161.1-47.11 8.447 .974 16.57 1.299 25.34 1.299 49.06 0 94.21-16.57 130.3-44.83-46.13-.975-84.79-31.19-98.11-72.77 6.498 .974 12.99 1.624 19.82 1.624 9.421 0 18.84-1.3 27.61-3.573-48.08-9.747-84.14-51.98-84.14-102.1v-1.299c13.97 7.797 30.21 12.67 47.43 13.32-28.26-18.84-46.78-51.01-46.78-87.39 0-19.49 5.197-37.36 14.29-52.95 51.65 63.67 129.3 105.3 216.4 109.8-1.624-7.797-2.599-15.92-2.599-24.04 0-57.83 46.78-104.9 104.9-104.9 30.21 0 57.5 12.67 76.67 33.14 23.72-4.548 46.46-13.32 66.6-25.34-7.798 24.37-24.37 44.83-46.13 57.83 21.12-2.273 41.58-8.122 60.43-16.24-14.29 20.79-32.16 39.31-52.63 54.25z"/></svg> &lt;font size="5"&gt;@amcinerney_&lt;/font&gt; <svg aria-hidden="true" role="img" viewBox="0 0 512 512" style="height:1em;width:1em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:#007DBA;overflow:visible;position:relative;"><path d="M464 64C490.5 64 512 85.49 512 112C512 127.1 504.9 141.3 492.8 150.4L275.2 313.6C263.8 322.1 248.2 322.1 236.8 313.6L19.2 150.4C7.113 141.3 0 127.1 0 112C0 85.49 21.49 64 48 64H464zM217.6 339.2C240.4 356.3 271.6 356.3 294.4 339.2L512 176V384C512 419.3 483.3 448 448 448H64C28.65 448 0 419.3 0 384V176L217.6 339.2z"/></svg> &lt;font size="5"&gt;andrew.mcinerney@ul.ie&lt;/font&gt;
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightLanguage": "r",
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
