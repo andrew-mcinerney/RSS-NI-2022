@@ -475,6 +475,28 @@ $$
 
 ---
 
+# Simple Covariate Effect
+
+<br>
+
+$$
+\begin{equation}
+  \hat{\beta}_j = E[\text{NN}(X)|x_{(j)} > a] - E[\text{NN}(X)|x_{(j)} < a]
+\end{equation}
+$$
+
+
+--
+
+
+Usually set $a = m_j$, where $m_j$ is the median value of covariate $j$
+
+--
+
+Associated uncertainty via delta method / bootstrapping
+
+---
+
 # Covariate-Effect Plots
 
 
@@ -556,7 +578,7 @@ Response:
 
 - `rm` (average number of rooms per dwelling)  
 
-- `lstat` (proportion of population that are 'lower status')
+- `lstat` (proportion of population that are disadvantaged)
 
 ---
 
@@ -578,6 +600,22 @@ cat(c(capture.output(summary(nn))[c(1:7, 10:11, 15, 19)], "[...]"), sep = "\n")
 
 ---
 
+# Boston Housing: Model Comparison
+
+```{r, echo=FALSE, out.width="95%", fig.align="center"}
+knitr::include_graphics("img/modelcom_boston-1.png")
+``` 
+
+---
+
+# Boston Housing: Model Comparison
+```{r, echo=FALSE, out.width="95%", fig.align="center"}
+knitr::include_graphics("img/modelcomp_boston_zoom-1.png")
+``` 
+
+
+---
+
 # Boston Housing: Model Summary 
 
 
@@ -592,6 +630,15 @@ summary(stnn)
 cat(c("[...]", capture.output(summary(stnn))[12:24]
       , "[...]"), sep = "\n")  
 ```
+
+
+---
+
+# Boston Housing: Simple Effects
+
+```{r, echo=FALSE, out.width="90%", fig.align="center"}
+knitr::include_graphics("img/BostonEffects1-1.png")
+``` 
 
 ---
 

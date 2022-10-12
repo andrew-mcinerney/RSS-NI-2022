@@ -411,6 +411,28 @@ $$
 
 ---
 
+# Simple Covariate Effect
+
+&lt;br&gt;
+
+$$
+`\begin{equation}
+  \hat{\beta}_j = E[\text{NN}(X)|x_{(j)} &gt; a] - E[\text{NN}(X)|x_{(j)} &lt; a]
+\end{equation}`
+$$
+
+
+--
+
+
+Usually set `\(a = m_j\)`, where `\(m_j\)` is the median value of covariate `\(j\)`
+
+--
+
+Associated uncertainty via delta method / bootstrapping
+
+---
+
 # Covariate-Effect Plots
 
 
@@ -491,7 +513,7 @@ Response:
 
 - `rm` (average number of rooms per dwelling)  
 
-- `lstat` (proportion of population that are 'lower status')
+- `lstat` (proportion of population that are disadvantaged)
 
 ---
 
@@ -526,6 +548,18 @@ summary(nn)
 
 ---
 
+# Boston Housing: Model Comparison
+
+&lt;img src="img/modelcom_boston-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Boston Housing: Model Comparison
+&lt;img src="img/modelcomp_boston_zoom-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
 # Boston Housing: Model Summary 
 
 
@@ -555,6 +589,13 @@ summary(stnn)
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## [...]
 ```
+
+
+---
+
+# Boston Housing: Simple Effects
+
+&lt;img src="img/BostonEffects1-1.png" width="90%" style="display: block; margin: auto;" /&gt;
 
 ---
 
