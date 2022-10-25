@@ -18,12 +18,15 @@ output:
       ratio: '16:9'
 header-includes:
   - \usepackage{booktabs}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r, echo=FALSE, message=FALSE}
 library(knitr)
 library(fontawesome)
 ```
+
 
 ```{r analysis, include=FALSE, cache=TRUE}
 
@@ -80,9 +83,17 @@ class: title-slide, left, bottom
 ### `r rmarkdown::metadata$institution`
 #### `r rmarkdown::metadata$event`, `r rmarkdown::metadata$date`
 
----
+???
 
-# About Me
+I am funded by SFI CRT in FDS.
+This is a multi-institutional collaboration between UL, UCD and MU.
+The goal of the centre is to fuse and blend the fundamentals of applied mathematics
+machine learning, and statistics.
+My research focuses on the combination of the latter two, where I'm looking at
+a statistical-modelling based approach to neural networks.
+So, neural networks are typically implemented as black-box models in machine
+learning, but taking a statistical perspective, I want to show how these models
+have similarities to the models traditionally used in statistical model.
 
 ---
 
@@ -119,6 +130,38 @@ Slides: [bit.ly/rss-fnn-stat](https://bit.ly/rss-fnn-stat)   Code: [bit.ly/rss-f
 ---
 class: inverse middle center subsection
 # Feedforward Neural Networks
+
+---
+
+# Background
+
+Attempts to model the brain.
+
+Idea that our brains consists of synapses and neurons.
+
+McCulloch and Pitts, Rosenblatt, Hinton.
+
+???
+
+Neural networks origniated from early attempts to model the human brain.
+The idea was that if we could replicate the process that the human brain uses
+for learning through an algorithm, then we could achieve artificial intelligence.
+Our brains are made up of over 86 billion neurons, which are connected together 
+by over 1,000 trillion synapses, which send signals.
+
+The idea, credited to McCulloch and Pitts, was to create a single neuron model
+and use it to solve problems.
+
+---
+
+# Background
+
+Interest within the statistics community in the late 1980s and early 1990s.
+
+Comprehensive reviews provided by White, Ripley, Cheng and Titterington.
+
+However, majority of research took place outside the field of statistics
+Brieman, Hooker and Mentch.
 
 ---
 
@@ -191,7 +234,7 @@ library(nnet)
 set.seed(1010101)
 nnet_model <- nnet(medv ~ ., data = Boston, size = 8, maxit = 5000,
                    linout = TRUE, trace = FALSE)
-cat(c(capture.output(summary(nnet_model))[c(1:10)], "[...]"),
+cat(c(capture.output(summary(nnet_model))[c(3:10)], "[...]"),
     sep = "\n") 
 ```
 
@@ -278,35 +321,38 @@ class: inverse middle center subsection
 
 # Model Selection
 
-
-.pull-left[
-```{r, echo=FALSE, out.width="90%", fig.align="center"}
-knitr::include_graphics("img/FNN.png")
+```{r, echo=FALSE, out.width="65%", fig.align="center"}
+knitr::include_graphics("img/FNN-ms.png")
 ``` 
-]
+
+---
+count: false
+# Model Selection
 
 
 
-<br>
+```{r, echo=FALSE, out.width="65%", fig.align="center"}
+knitr::include_graphics("img/FNN-vs.png")
+``` 
 
-<br>
+---
+count: false
+# Model Selection
 
 
-$$
-\begin{equation}
-\text{NN}(x_i) = \gamma_0+\sum_{k=1}^q \gamma_k \phi \left( \sum_{j=0}^p \omega_{jk}x_{ji}\right)
-\end{equation}
-$$
+
+```{r, echo=FALSE, out.width="65%", fig.align="center"}
+knitr::include_graphics("img/FNN-vsmc.png")
+``` 
 
 ---
 # Proposed Approach
 
 .pull-left[
-```{r, echo=FALSE, out.width="90%", fig.align="center"}
-knitr::include_graphics("img/FNN.png")
+```{r, echo=FALSE, out.width="100%", fig.align="center"}
+knitr::include_graphics("img/FNN1.png")
 ``` 
 ]
-
 --
 .pull-right[
 Three phases for model selection:
@@ -319,6 +365,8 @@ Three phases for model selection:
 1. Hidden-node selection
 {{content}}
 
+
+
 --
 
 2. Input-node selection
@@ -330,19 +378,21 @@ Three phases for model selection:
 {{content}}
 
 ---
-
 # Proposed Approach
 
 --
 .center[
+<figcaption>Hidden Node Selection</figcaption>
 <img src="img/hidden-node-2.png" height="125px"/>
 ]
 --
 .center[
+<figcaption>Input Node Selection</figcaption>
 <img src="img/input-node-2.png" height="125px"/>
 ]
 --
 .center[
+<figcaption>Fine Tune</figcaption>
 <img src="img/fine-tune-2.png" height="125px"/>
 ]
 ---
@@ -357,7 +407,7 @@ Three phases for model selection:
 
 $$
 \begin{equation}
-\text{Out-of-Sample MSE} = \sum_{i=1}^{n_\text{val}} (y_i - NN(x_i))^2
+\text{Out-of-Sample MSE} = \frac{1}{n_\text{val}}\sum_{i=1}^{n_\text{val}} (y_i - NN(x_i))^2
 \end{equation}
 $$
 
@@ -383,13 +433,78 @@ K = (p+2)q+1
 \end{equation}
 $$
 
+---
+
+# Simulation Setup
+
+
+.pull-left[
+<br>
+
+
+True Model: $p = 3$, $q = 3$
+
+]
 
 ---
+count: false
+# Simulation Setup
+
+
+.pull-left[
+<br>
+
+
+True Model: $p = 3$, $q = 3$
+
+
+<br>
+
+No. unimportant inputs: $10$
+
+
+]
+
+
+
+---
+count: false
+# Simulation Setup
+
+
+.pull-left[
+<br>
+
+
+True Model: $p = 3$, $q = 3$
+
+
+<br>
+
+No. unimportant inputs: $10$
+
+
+<br>
+
+Max no. hidden nodes: $10$
+
+]
+
+--
+
+.pull-right[
+```{r, echo=FALSE, out.width="90%", fig.align="center"}
+knitr::include_graphics("img/simFNN.png")
+``` 
+]
+
+
+
 # Simulation Results: Approach
 
 --
 
-```{r, echo=FALSE, out.width="70%", fig.align="center"}
+```{r, echo=FALSE, out.width="65%", fig.align="center"}
 knitr::include_graphics("img/table-sim-approach.png")
 ``` 
 
@@ -403,7 +518,6 @@ knitr::include_graphics("img/table-sim-objfun.png")
 ``` 
 
 --
-
 ```{r, echo=FALSE, out.width="70%", fig.align="center"}
 knitr::include_graphics("img/table-sim-metrics.png")
 ```
@@ -479,12 +593,15 @@ $$
 
 <br>
 
+--
+
 $$
 \begin{equation}
-  \hat{\beta}_j = E[\text{NN}(X)|x_{(j)} > a] - E[\text{NN}(X)|x_{(j)} < a]
+  \hat{\tau_j} = E[\text{NN}(X)|x_{(j)} > a] - E[\text{NN}(X)|x_{(j)} < a]
 \end{equation}
 $$
 
+<br>
 
 --
 
@@ -492,6 +609,8 @@ $$
 Usually set $a = m_j$, where $m_j$ is the median value of covariate $j$
 
 --
+
+<br>
 
 Associated uncertainty via delta method / bootstrapping
 
@@ -502,7 +621,7 @@ Associated uncertainty via delta method / bootstrapping
 
 $$
 \begin{equation}
- \overline{\text{NN}}_j(x) = \frac{1}{n}\sum_{i=1}^n \text{NN}(x_{i,1}, \ldots,x_{i,j-1},x, x_{i,j+1}, \ldots)
+ \overline{\text{NN}}_j(x) = \frac{1}{n}\sum_{i=1}^n \text{NN}(x_{(i,1)}, \ldots,x_{(i,j-1)},x, x_{(i,j+1)}, \ldots, x_{(i,p)})
 \end{equation}
 $$
 
@@ -595,7 +714,8 @@ summary(nn)
 --
 
 ```{r summ, echo = FALSE, cache = TRUE, class.output = "bg-primary"}
-cat(c(capture.output(summary(nn))[c(1:7, 10:11, 15, 19)], "[...]"), sep = "\n")  
+cat(c(capture.output(summary(nn))[c(1:23)], "[...]"), sep = "\n")  
+
 ```
 
 ---
@@ -627,8 +747,7 @@ summary(stnn)
 --
 
 ```{r summst, echo = FALSE, cache = TRUE, class.output = "bg-primary"}
-cat(c("[...]", capture.output(summary(stnn))[12:24]
-      , "[...]"), sep = "\n")  
+cat(c("[...]", capture.output(summary(stnn))[12:24]), sep = "\n")  
 ```
 
 

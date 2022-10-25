@@ -74,3 +74,12 @@ th, td { padding: 5px; }
     left: 0 !important;
   }
 }
+
+pre {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 100px;
+}
