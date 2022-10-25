@@ -498,7 +498,7 @@ knitr::include_graphics("img/simFNN.png")
 ``` 
 ]
 
-
+---
 
 # Simulation Results: Approach
 
