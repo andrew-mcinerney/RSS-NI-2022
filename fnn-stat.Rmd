@@ -85,12 +85,12 @@ class: title-slide, left, bottom
 
 ???
 
+Intro.
 I am funded by SFI CRT in FDS.
 This is a multi-institutional collaboration between UL, UCD and MU.
 The goal of the centre is to fuse and blend the fundamentals of applied mathematics
 machine learning, and statistics.
-My research focuses on the combination of the latter two, where I'm looking at
-a statistical-modelling based approach to neural networks.
+My research focuses on the combination of the latter two.
 So, neural networks are typically implemented as black-box models in machine
 learning, but taking a statistical perspective, I want to show how these models
 have similarities to the models traditionally used in statistical model.
@@ -104,6 +104,10 @@ have similarities to the models traditionally used in statistical model.
 
 - Feedforward Neural Networks
 
+???
+Brief intro. to the history of NNs and the early work by statisticians in the
+field.
+Then I will introduce the FNN model.
 
 --
 
@@ -135,22 +139,29 @@ class: inverse middle center subsection
 
 # Background
 
-Attempts to model the brain.
+--
 
-Idea that our brains consists of synapses and neurons.
+Neural networks originated from attempts to model the human brain.
 
-McCulloch and Pitts, Rosenblatt, Hinton.
+<br>
 
-???
+--
 
-Neural networks origniated from early attempts to model the human brain.
-The idea was that if we could replicate the process that the human brain uses
-for learning through an algorithm, then we could achieve artificial intelligence.
-Our brains are made up of over 86 billion neurons, which are connected together 
-by over 1,000 trillion synapses, which send signals.
+Early influential papers:
 
-The idea, credited to McCulloch and Pitts, was to create a single neuron model
-and use it to solve problems.
+--
+
+-  McCulloch and Pitts (1943)
+
+--
+
+-  Rosenblatt (1958)
+
+--
+
+-  Rumelhart, Hinton and Williams (1986)
+
+
 
 ---
 
@@ -158,10 +169,67 @@ and use it to solve problems.
 
 Interest within the statistics community in the late 1980s and early 1990s.
 
-Comprehensive reviews provided by White, Ripley, Cheng and Titterington.
+--
+
+<br>
+
+Comprehensive reviews provided by White (1989), Ripley (1993), Cheng and Titterington (1994).
+
+--
+
+<br>
 
 However, majority of research took place outside the field of statistics
-Brieman, Hooker and Mentch.
+(Breiman, 2001; Hooker and Mentch, 2021).
+
+???
+In the late 1980s to early 1990s, there was an interest within the statistics
+in neural networks. 
+Some really comprehensive reviews of neural networks from a statistical
+perspective are given by White ..., Ripley, ..., and Cheng and Titterington ...
+However, since then, neural network research has been primarily conducted outside
+the field of statistics.
+It has primarily been conducted by computer scientists, and now machine learning
+researchers.
+But, there have been calls to try an align this research with statistics.
+And the potential benefit is two fold. 
+NNs are more flexible than traditional nonlinear regression models.
+Also, a statistical-modelling perspective can help improve the implementation,
+and, more importantly, the interpretation of these models.
+Examples of this can be found in Rugamer and ..., which drawn on NNs to
+increase the flexibility of distributional regression and mixed-effects 
+modelling.
+And, Agarwal which drawn on additive structure in GAMs to improve 
+interpretability of NNs, in what they term NAMs.
+
+---
+
+# Background
+
+Renewed interest in merging statistical models and neural networks.
+
+--
+
+
+From a statistical viewpoint:
+
+--
+
+
+-  Distributional regression (Rugamer et al., 2020, 2021).
+
+--
+
+-  Mixed modelling (Tran et al., 2020).
+
+--
+
+From a machine-learning viewpoint:
+
+--
+
+- Neural Additive Models (Agarwal et al., 2020)
+
 
 ---
 
@@ -179,6 +247,14 @@ knitr::include_graphics("img/FNN.png")
 
 <br>
 
+???
+
+FNN with single hidden layer.
+
+Neural networks are often represented diagrammatically, so here we have a visual representation of a Feedforward neural network.
+
+They are made up of three different layers.
+
 --
 
 $$
@@ -186,6 +262,15 @@ $$
 \text{NN}(x_i) = \gamma_0+\sum_{k=1}^q \gamma_k \phi \left( \sum_{j=0}^p \omega_{jk}x_{ji}\right)
 \end{equation}
 $$
+
+???
+
+Of course, we can also represent this neural network with an equation, which is given here.
+
+Explanation
+
+Viewed as a non-linear regression model, where the weights are the parameters of the model, and again the input nodes represent covariates and the hidden layer controls complexity.
+
 
 ---
 
@@ -214,6 +299,7 @@ Response:
 
 - `lstat` (proportion of population that are disadvantaged)
 
+
 ---
 
 # R Implementation: nnet
@@ -238,6 +324,15 @@ cat(c(capture.output(summary(nnet_model))[c(3:10)], "[...]"),
     sep = "\n") 
 ```
 
+???
+
+R packages: neuralnet, ann, nnet, keras.
+
+Nnet has history in R, and it is very easy to use.
+
+Useful for prediction. However, it is not very insightful. Looking at the output of the summary for an nnet object, we just get a list of coefficients. 
+
+Unlike outputs from other statistical models, which provides us summary tables containing effects, and p-values. 
 
 ---
 class: inverse middle center subsection
@@ -269,6 +364,7 @@ $$
 \ell(\theta)= -\frac{n}{2}\log(2\pi\sigma^2)-\frac{1}{2\sigma^2}\sum_{i=1}^n(y_i-\text{NN}(x_i))^2
 $$
 
+
 ---
 
 # Uncertainty Quantification
@@ -279,6 +375,9 @@ $$
 \hat{\theta} \sim N[\theta, \Sigma = \mathcal{I}(\theta)^{-1}]
 $$
 
+???
+
+Then, the asymptotic results from maximum likelihood theory apply, so as n goes to infinity, our estimated weight vector is normally distributed around the true weight vector theta and variance-covariance matrix given by the inverse of the information matrix.
 --
 
 Estimate $\Sigma$ using
@@ -287,11 +386,16 @@ $$
 \hat{\Sigma} = I_o(\hat{\theta})^{-1}
 $$
 
+???
+
+Of course, we can estimate sigma using the observed information matrix, which we can easily compute from neural network optimiser like nnet, and this can be used in any uncertainty quantification. So this allows us to perform hypothesis tests, and calculate confidence intervals, which are not usually computed for neural networks.
+
 --
 
 <br>  
 
 However, inverting $I_o(\hat{\theta})$ can be problematic in neural networks.
+
 ---
 
 # Redundancy
@@ -302,6 +406,10 @@ Redundant hidden nodes can lead to issues of unidentifiability for some of the p
 
 <br>
 
+???
+
+If we have a hidden node in our model which provides no contribution in the estimation of the response this node is redundant. This then leads to an issue of unidenitiability for all the weights that enter that hidden node from the input layer.
+
 --
 
 Redundant hidden nodes $\implies$ Singular information matrix.
@@ -311,6 +419,10 @@ Redundant hidden nodes $\implies$ Singular information matrix.
 --
 
 Model selection is required.
+
+???
+
+So, while it is common in the implementation of these models to select the number of hidden nodes to be quite large to capture all non-linearities, when taking a statistical standpoint and wanting to quantify any uncertainty in your estimates (or functions thereof), model selection is required.
 
 
 ---
@@ -625,6 +737,10 @@ $$
 \end{equation}
 $$
 
+???
+
+If we define NN j bar of x, which is a conditional average neural network prediction over the data when all the covariates vary except for covariate j which is fixed to x.
+
 --
 Propose covariate-effect plots of the following form:
 
@@ -643,6 +759,7 @@ Usually set $d = \text{SD}(x_j)$
 --
 
 Associated uncertainty via delta method.
+
 
 ---
 class: inverse middle center subsection
@@ -675,6 +792,9 @@ install_github("andrew-mcinerney/statnnet")
 ``` 
 ]
 
+???
+
+We have implemented these concept in an R package, statnnet, which is currently available on GitHub, and will be on CRAN soon. This packagecan be used to perform the proposed model selection approach, and also take an nnet object as an input and calculate a more informative summary with p-values and effects. 
 
 ---
 
@@ -699,6 +819,10 @@ Response:
 
 - `lstat` (proportion of population that are disadvantaged)
 
+???
+
+So, to show statnnet in action, I’m going to revisit the data application. As I said earlier, we have 506 observations of communities within Boston, the response is median value of a house, and we are focusing on two of the twelve predictors, average room size, and a measure of disadvantageness. 
+
 ---
 
 # Boston Housing: Model Selection 
@@ -717,6 +841,10 @@ summary(nn)
 cat(c(capture.output(summary(nn))[c(1:23)], "[...]"), sep = "\n")  
 
 ```
+
+???
+
+We can perform model selection using a function called selectnn(). We supply a formula, and data, along with Q which is the maximum hidden layer size to be considerd. Then, after running model sselection, we can look at a summary. Here, I have a condensed ouput from summary. As you can can, the model selection procedure selected 8 of the 12 covariates and selected the number of hidden nodes to be 4. Then, just focusing on the two covariates, you can see both were selected, and we also report delta BIC as a measure of variable importance. This is calculated by removing the covariate, refitting the model, calculating the BIC and comparing to the model with the covariate included. 
 
 ---
 
@@ -750,7 +878,9 @@ summary(stnn)
 cat(c("[...]", capture.output(summary(stnn))[12:24]), sep = "\n")  
 ```
 
+???
 
+We also have a statnnet function, which can take a neural network as input and calculated a more statistically-focused summary table. Here, we have a summary table for our neural network. We have point estimates and their standard error. I didn’t touch on how we calculate these in this talk but there are calculated by splitting the covariate into two ground based on the median value and looking at the the difference in the average prediction of both groups. We also get the Wald test results. So we can see here that rm and lstat are both statistically significant.
 ---
 
 # Boston Housing: Simple Effects
@@ -794,8 +924,12 @@ axis(3, seq(0, 1, length.out = 5), labels = seq(2, 38, length.out = 5),
 ```  
 ] 
 
+???
+
+And, we can also calculate the covariate-effect plots I mentioned earlier, and their associated uncertainty. Here is the code to plot rm and lstat which are the 4th and 8th covariate and their uncertainty which is estimated using the delta method. Here is the rm plot, so you can look at these plots as a varying effect plots. So we can see the effect of average number of rooms on median house price is zero when the houses are quite small, so about 3.5 rooms. But, as room number of rooms increase, the effect gets stronger, and it is positive so it increases the median house value. Then maybe it looks like when we get to an average number of rooms of just over size, the effect seems to become constant of about 0.12. For the lstat plot, we can see that when lstat is low, an increase in lstat is associated with a negative effect of about -0.1, but as lstat increase the effect becomes weaker, and then, for a value of about 29%, increasing lstat has no effect on the value of homes.
+
 ---
-class: final-slide
+
 # Summary 
 
 
@@ -807,19 +941,46 @@ Calculation of a likelihood function allows for uncertainty quantification.
 
 --
 
-Our R package extends existing neural network packages
-to allow for a more interpretable, statistically-based output.
+Statistically-based model selection is required to avoid issues of
+unidentifiability.
 
+--
+
+Our R package extends existing neural network packages
+to allow for model selection and a more interpretable, statistically-based output.
+
+
+---
+
+# References
+<font size="4">
+R. Agarwal, N. Frosst, X. Zhang, R. Caruana and G. E. Hinton, "Neural additive models: Interpretable machine learning with neural nets," arXiv preprint arXiv:2004.13912, 2020.
+</font>   
+<br>
+<font size="4">
+K. Fukumizu, 
+"A regularity condition of the information  
+matrix of a multilayer perceptron network". Neural Networks,  
+9(5):871–879. 
+</font>
+<br>
+<font size="4">
+D. Rügamer, C. Kolb and N. Klein, "Semi-Structured Deep Distributional Regression: Combining Structured Additive Models and Deep Learning," arXiv preprint arXiv:2002.05777, 2020.
+</font>
+<br>
+<font size="4">
+D. Rügamer, C. Kolb, C. Fritz, F. Pfisterer, B. Bischl, R. Shen, C. Bukas, L. Barros de Andrade e Sousa, D. Thalmeier, P. Baumann, N. Klein and C. L. Müller, "deepregression: a Flexible Neural Network Framework for Semi-Structured Deep Distributional Regression," arXiv preprint arXiv:2104.02705, 2021.
+</font>
+<br>
+<font size="4">
+M.-N. Tran, N. Nguyen, D. Nott and R. Kohn, "Bayesian deep net GLM and GLMM," Journal of Computational and Graphical Statistics, vol. 29, p. 97–113, 2020.
+</font>
 
 ---
 
 class: final-slide
 # References
 
-Fukumizu, K. (1996).
-A regularity condition of the information  
-matrix of a multilayer perceptron network. Neural Networks,  
-9(5):871–879. 
 
 McInerney, A. and Burke, K. (2022).
 A Statistically-Based Approach  
@@ -832,6 +993,8 @@ arXiv preprint arXiv:2207.04248.
 ```{r, eval = FALSE}
 devtools::install_github("andrew-mcinerney/statnnet")
 ```
+
+<br>
 
 `r fa(name = "github", fill = "#007DBA")` <font size="5">andrew-mcinerney</font>   `r fa(name = "twitter", fill = "#007DBA")` <font size="5">@amcinerney_</font> `r fa(name = "envelope", fill = "#007DBA")` <font size="5">andrew.mcinerney@ul.ie</font>
 
